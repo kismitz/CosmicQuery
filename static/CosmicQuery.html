@@ -1,1 +1,1325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CosmicQuery - Explore the Cosmos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Space Grotesk', 'Helvetica Neue', sans-serif;
+            background: #000000;
+            color: #ffffff;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Enhanced animated starfield background */
+        .starfield {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            background: radial-gradient(ellipse at center, #0d0d1f 0%, #000000 100%);
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite ease-in-out;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.4; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        /* Floating particles */
+        .particle {
+            position: fixed;
+            width: 3px;
+            height: 3px;
+            background: rgba(102, 126, 234, 0.6);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: float 20s infinite ease-in-out;
+            z-index: 1;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) translateX(50px); opacity: 0; }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 100%;
+            width: 100%;
+            padding: 30px 40px;
+            min-height: 100vh;
+        }
+
+        /* Header with more presence */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeInDown 1s ease-out;
+            padding: 20px 0;
+        }
+
+        .logo {
+            font-size: 5em;
+            font-weight: 700;
+            letter-spacing: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            text-shadow: 0 0 80px rgba(102, 126, 234, 0.5);
+            position: relative;
+        }
+
+        .logo::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #667eea, transparent);
+        }
+
+        .tagline {
+            font-size: 1.4em;
+            color: #aaa;
+            font-weight: 400;
+            letter-spacing: 3px;
+            margin-top: 25px;
+        }
+
+        /* Main content area - fuller layout */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 30px;
+            animation: fadeIn 1.2s ease-out;
+            height: calc(100vh - 280px);
+            min-height: 700px;
+            align-items: stretch;
+        }
+
+        /* Upload section - more dramatic */
+        .upload-section {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 30px;
+            padding: 50px;
+            backdrop-filter: blur(20px);
+            transition: all 0.4s ease;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            position: relative;
+            overflow: visible;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .upload-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.5), transparent);
+        }
+
+        .upload-section:hover {
+            border-color: rgba(102, 126, 234, 0.6);
+            box-shadow: 0 8px 60px rgba(102, 126, 234, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .upload-area {
+            border: 3px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            padding: 80px 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: visible;
+            background: rgba(102, 126, 234, 0.02);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .upload-area::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.2), rgba(102, 126, 234, 0.1) 40%, transparent 70%);
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            filter: blur(40px);
+        }
+
+        .upload-area:hover::before {
+            opacity: 1;
+        }
+
+        .upload-area:hover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.08);
+            transform: scale(1.02);
+        }
+
+        .upload-area.dragover {
+            border-color: #f093fb;
+            background: rgba(240, 147, 251, 0.15);
+            transform: scale(1.05);
+        }
+
+        .upload-icon {
+            font-size: 6em;
+            margin-bottom: 30px;
+            opacity: 0.9;
+            filter: drop-shadow(0 0 20px rgba(102, 126, 234, 0.5));
+            animation: floatIcon 3s ease-in-out infinite;
+        }
+
+        @keyframes floatIcon {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .upload-text {
+            font-size: 1.5em;
+            color: #ddd;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .upload-hint {
+            font-size: 1.1em;
+            color: #888;
+            font-weight: 300;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .preview-container {
+            text-align: center;
+            animation: slideInUp 0.6s ease-out;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 25px;
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px 0;
+            position: relative;
+        }
+
+        .preview-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .preview-container::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .preview-container::-webkit-scrollbar-thumb {
+            background: rgba(102, 126, 234, 0.5);
+            border-radius: 10px;
+        }
+
+        .preview-image-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .preview-image {
+            max-width: 100%;
+            max-height: 550px;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            display: block;
+        }
+
+        .delete-image-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 50, 50, 0.9);
+            border: 1px solid rgba(255, 100, 100, 0.5);
+            backdrop-filter: blur(10px);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.3s ease;
+            color: white;
+            font-size: 1.3em;
+            font-weight: bold;
+            z-index: 10;
+        }
+
+        .preview-image-wrapper:hover .delete-image-btn {
+            opacity: 1;
+        }
+
+        .delete-image-btn:hover {
+            background: rgba(255, 50, 50, 1);
+            transform: scale(1.1);
+            box-shadow: 0 4px 20px rgba(255, 50, 50, 0.5);
+        }
+
+        /* Analysis section - fuller and more immersive */
+        .analysis-section {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 30px;
+            padding: 50px;
+            backdrop-filter: blur(20px);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            position: relative;
+            overflow: visible;
+        }
+
+        .analysis-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.5), transparent);
+        }
+
+        .analysis-section-scroll {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: visible;
+            padding-right: 10px;
+            margin-right: -10px;
+        }
+
+        .analysis-section-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .analysis-section-scroll::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .analysis-section-scroll::-webkit-scrollbar-thumb {
+            background: rgba(102, 126, 234, 0.5);
+            border-radius: 10px;
+        }
+
+        .section-title {
+            font-size: 1.8em;
+            font-weight: 600;
+            margin-bottom: 30px;
+            letter-spacing: 3px;
+            background: linear-gradient(135deg, #667eea, #f093fb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-transform: uppercase;
+        }
+
+        /* Status indicator - more dramatic */
+        .status-container {
+            text-align: center;
+            padding: 60px 40px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .status-icon {
+            font-size: 5em;
+            margin-bottom: 30px;
+            animation: pulse 2s infinite;
+            filter: drop-shadow(0 0 30px rgba(102, 126, 234, 0.8));
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.15); opacity: 0.8; }
+        }
+
+        .status-text {
+            font-size: 1.5em;
+            color: #ccc;
+            margin-bottom: 40px;
+            font-weight: 400;
+        }
+
+        /* Progress bar - more visible */
+        .progress-bar {
+            width: 100%;
+            max-width: 500px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 30px auto;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+            width: 0%;
+            animation: progress 3s ease-in-out infinite;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.8);
+        }
+
+        @keyframes progress {
+            0% { width: 0%; }
+            50% { width: 70%; }
+            100% { width: 100%; }
+        }
+
+        /* Results - more immersive */
+        .results-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .annotated-image-wrapper {
+            position: relative;
+            display: inline-block;
+            align-self: center;
+            cursor: pointer;
+        }
+
+        .annotated-image {
+            max-width: 100%;
+            width: auto;
+            height: auto;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(102, 126, 234, 0.4);
+            animation: fadeIn 0.8s ease-out;
+            border: 2px solid rgba(102, 126, 234, 0.4);
+            display: block;
+            transition: all 0.3s ease;
+        }
+
+        .annotated-image-wrapper:hover .annotated-image {
+            transform: scale(1.02);
+            box-shadow: 0 25px 70px rgba(102, 126, 234, 0.6);
+        }
+
+        .image-controls {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            gap: 8px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .annotated-image-wrapper:hover .image-controls {
+            opacity: 1;
+        }
+
+        .image-control-btn {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(15px);
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            color: rgba(255, 255, 255, 0.8);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+        }
+
+        .image-control-btn:hover {
+            background: rgba(102, 126, 234, 0.8);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .analysis-text {
+            background: rgba(102, 126, 234, 0.12);
+            border-left: 4px solid #667eea;
+            padding: 25px;
+            border-radius: 15px;
+            line-height: 1.9;
+            color: #e8e8e8;
+            font-size: 1.05em;
+            animation: slideInUp 0.6s ease-out;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.2);
+            font-weight: 400;
+        }
+
+        /* Chat interface - more engaging */
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            min-height: 250px;
+        }
+
+        .chat-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .astro-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #000000, #911fbe);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 18px;
+            font-size: 1.6em;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+            animation: pulse 3s infinite;
+        }
+
+        .astro-name {
+            font-size: 1.3em;
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            max-height: 250px;
+            padding-right: 10px;
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: rgba(102, 126, 234, 0.5);
+            border-radius: 10px;
+        }
+
+        .message {
+            margin-bottom: 18px;
+            animation: slideInUp 0.4s ease-out;
+        }
+
+        .message.user {
+            text-align: right;
+        }
+
+        .message-content {
+            display: inline-block;
+            padding: 15px 22px;
+            border-radius: 18px;
+            max-width: 85%;
+            font-size: 1.05em;
+            font-weight: 400;
+        }
+
+        .message.user .message-content {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .message.astro .message-content {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #e8e8e8;
+            text-align: left;
+        }
+
+        .chat-input-container {
+            display: flex;
+            gap: 12px;
+        }
+
+        .chat-input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 25px;
+            padding: 15px 25px;
+            color: white;
+            font-size: 1.05em;
+            outline: none;
+            transition: all 0.3s ease;
+            font-weight: 400;
+        }
+
+        .chat-input:focus {
+            border-color: #667eea;
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .chat-input::placeholder {
+            color: #888;
+        }
+
+        /* Buttons - more substantial */
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            padding: 16px 40px;
+            border-radius: 25px;
+            color: white;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-weight: 600;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-send {
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.05em;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Loading spinner - more dramatic */
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            margin: 30px auto;
+            box-shadow: 0 0 30px rgba(102, 126, 234, 0.5);
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Navigation Menu */
+        .nav-button {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(20px);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            gap: 5px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-button:hover {
+            background: rgba(102, 126, 234, 0.15);
+            border-color: rgba(102, 126, 234, 0.6);
+            transform: scale(1.05);
+            box-shadow: 0 4px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .hamburger-line {
+            width: 24px;
+            height: 2px;
+            background: white;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-button.active .hamburger-line:nth-child(1) {
+            transform: rotate(45deg) translate(6px, 6px);
+        }
+
+        .nav-button.active .hamburger-line:nth-child(2) {
+            opacity: 0;
+        }
+
+        .nav-button.active .hamburger-line:nth-child(3) {
+            transform: rotate(-45deg) translate(6px, -6px);
+        }
+
+        /* About Modal */
+        .about-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+
+        .about-modal.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .about-content {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(30px);
+            border-radius: 30px;
+            padding: 60px;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            transform: scale(0.9);
+            transition: transform 0.4s ease;
+            position: relative;
+        }
+
+        .about-modal.active .about-content {
+            transform: scale(1);
+        }
+
+        .about-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .about-content::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .about-content::-webkit-scrollbar-thumb {
+            background: rgba(102, 126, 234, 0.5);
+            border-radius: 10px;
+        }
+
+        .about-header {
+            font-size: 2.5em;
+            font-weight: 600;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, #667eea, #f093fb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+        }
+
+        .about-section {
+            margin-bottom: 35px;
+        }
+
+        .about-section h3 {
+            font-size: 1.5em;
+            font-weight: 500;
+            margin-bottom: 15px;
+            color: #667eea;
+            letter-spacing: 1px;
+        }
+
+        .about-section p {
+            line-height: 1.9;
+            color: #ccc;
+            font-size: 1.05em;
+            margin-bottom: 15px;
+        }
+
+        .about-section ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .about-section li {
+            padding: 12px 0;
+            padding-left: 30px;
+            position: relative;
+            color: #ddd;
+            font-size: 1.05em;
+            line-height: 1.7;
+        }
+
+        .about-section li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+            font-size: 1.5em;
+        }
+
+        .close-button:hover {
+            background: rgba(255, 100, 100, 0.2);
+            border-color: rgba(255, 100, 100, 0.5);
+            transform: rotate(90deg);
+        }
+
+        /* Responsive */
+        @media (max-width: 1400px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+            
+            .logo {
+                font-size: 4em;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .logo {
+                font-size: 3em;
+                letter-spacing: 6px;
+            }
+            
+            .upload-section, .analysis-section {
+                padding: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="starfield" id="starfield"></div>
+    
+    <!-- Navigation Button -->
+    <div class="nav-button" id="navButton">
+        <div class="hamburger-line"></div>
+        <div class="hamburger-line"></div>
+        <div class="hamburger-line"></div>
+    </div>
+
+    <!-- About Modal -->
+    <div class="about-modal" id="aboutModal">
+        <div class="about-content">
+            <div class="close-button" id="closeButton">×</div>
+            <h2 class="about-header">About CosmicQuery</h2>
+            
+            <div class="about-section">
+                <h3>🌌 What is CosmicQuery?</h3>
+                <p>CosmicQuery is an advanced astronomical image analysis platform that combines interstellar feature-detecting technology with artificial intelligence to help you better explore and understand the cosmos. Whether you're an amateur astronomer, educator, or simply curious about the night sky, CosmicQuery transforms your celestial photographs into rich, educational experiences.</p>
+            </div>
+
+            <div class="about-section">
+                <h3>🔭 How It Works</h3>
+                <ul>
+                    <li><strong>Upload Your Image:</strong> Start by uploading any photograph of the night sky, celestial objects, or planets. This can be any photo of the heavens, whether it be from your telescope setup in the backyard or JWST, you will always be able to learn just a little more through CosmicQuery.</li>
+                    <li><strong>Astrometry Analysis:</strong> Our system references Astrometry.net on the backend, a sophisticated plate-solving library that has the power to identify exact celestial coordinates, features, and objects in your image.</li>
+                    <li><strong>SIMBAD Database Query:</strong> We cross-reference detected objects with the SIMBAD astronomical database to retrieve detailed information about stars, galaxies, and other celestial bodies.</li>
+                    <li><strong>AI-Powered Insights:</strong> Our AI guide, Astro, analyzes the data provided and provides you with scientifically accurate explanations about what you're viewing.</li>
+                    <li><strong>Interactive Q&A:</strong> Astro is also available to answer any questions you may have about the objects in your image, and ensures you can receive expert-level answers without having to look elsewhere.</li>
+                </ul>
+            </div>
+
+            <div class="about-section">
+                <h3>✨ Key Features</h3>
+                <ul>
+                    <li>Precise celestial coordinate identification.</li>
+                    <li>Automatic object detection and annotation.</li>
+                    <li>Real-time astronomical data retrieval.</li>
+                    <li>AI-powered explanations with scientific accuracy.</li>
+                    <li>Interactive chat interface for learning.</li>
+                    <li>Support for various image formats (JPG, PNG, FITS).</li>
+                </ul>
+            </div>
+
+            <div class="about-section">
+                <h3>🚀 Technology Stack</h3>
+                <p>CosmicQuery leverages astronomical solving libraries such Astrometry.net for annotation and SIMBAD for astronomical data. The backend is built on python, using HTML/CSS as the front end. Use of OpenRouter provides advanced language models for natural conversation and education, with no cost to entry.</p>
+            </div>
+
+            <div class="about-section">
+                <h3>🌟 Perfect For</h3>
+                <ul>
+                    <li>Amateur astronomers wanting to identify unfamiliar objects.</li>
+                    <li>Educators teaching astronomy concepts and STEM engagement.</li>
+                    <li>Students wanting to know more about star clusters, and visualize features.</li>
+                    <li>Anyone with a passion to learn about the night sky above.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="header">
+            <h1 class="logo">CosmicQuery</h1>
+            <p class="tagline">Understand the Cosmos, One Image at a Time...</p>
+        </div>
+
+        <div class="main-content">
+            <!-- Upload Section -->
+            <div class="upload-section">
+                <h2 class="section-title">Upload Celestial Image</h2>
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">🌌</div>
+                    <div class="upload-text">Drop your image here or click to browse</div>
+                    <div class="upload-hint">Support for JPG, PNG, FITS formats</div>
+                    <input type="file" id="fileInput" accept="image/*">
+                </div>
+                <div class="preview-container hidden" id="previewContainer">
+                    <div class="preview-image-wrapper">
+                        <img id="previewImage" class="preview-image" alt="Preview">
+                        <div class="delete-image-btn" id="deleteImageBtn">×</div>
+                    </div>
+                    <button class="btn" id="analyzeBtn">Analyze Image</button>
+                </div>
+            </div>
+
+            <!-- Analysis Section -->
+            <div class="analysis-section">
+                <h2 class="section-title">Cosmic Analysis</h2>
+                
+                <div class="analysis-section-scroll">
+                    <!-- Initial state -->
+                    <div class="status-container" id="initialState">
+                        <div class="status-icon">✨</div>
+                        <div class="status-text">Upload an image to begin your cosmic journey</div>
+                    </div>
+
+                    <!-- Processing state -->
+                    <div class="status-container hidden" id="processingState">
+                        <div class="spinner"></div>
+                        <div class="status-text">Solving celestial photo...</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill"></div>
+                        </div>
+                    </div>
+
+                    <!-- Results state -->
+                    <div class="results-container hidden" id="resultsState">
+                        <div class="annotated-image-wrapper hidden" id="annotatedImageWrapper">
+                            <img id="annotatedImage" class="annotated-image" alt="Annotated">
+                            <div class="image-controls">
+                                <button class="image-control-btn" id="downloadImageBtn" title="Download image">⬇</button>
+                            </div>
+                        </div>
+                        <div class="analysis-text" id="analysisText"></div>
+                        
+                        <div class="chat-container">
+                            <div class="chat-header">
+                                <div class="astro-avatar">🪐</div>
+                                <div class="astro-name">Astro - Your AI Guide</div>
+                            </div>
+                            <div class="chat-messages" id="chatMessages"></div>
+                            <div class="chat-input-container">
+                                <input 
+                                    type="text" 
+                                    class="chat-input" 
+                                    id="chatInput" 
+                                    placeholder="Ask Astro about what you see!"
+                                >
+                                <button class="btn btn-send" id="sendBtn">Send</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Create enhanced starfield with shooting stars
+        function createStarfield() {
+            const starfield = document.getElementById('starfield');
+            const numStars = 200;
+            
+            for (let i = 0; i < numStars; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                const size = Math.random() * 2.5 + 0.5;
+                star.style.width = size + 'px';
+                star.style.height = size + 'px';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                starfield.appendChild(star);
+            }
+        }
+        
+        // Create floating particles
+        function createParticles() {
+            const numParticles = 15;
+            for (let i = 0; i < numParticles; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                particle.style.animationDuration = (Math.random() * 10 + 15) + 's';
+                document.body.appendChild(particle);
+            }
+        }
+        
+        createStarfield();
+        createParticles();
+
+        // Navigation and About Modal
+        const navButton = document.getElementById('navButton');
+        const aboutModal = document.getElementById('aboutModal');
+        const closeButton = document.getElementById('closeButton');
+
+        navButton.addEventListener('click', () => {
+            navButton.classList.toggle('active');
+            aboutModal.classList.toggle('active');
+        });
+
+        closeButton.addEventListener('click', () => {
+            navButton.classList.remove('active');
+            aboutModal.classList.remove('active');
+        });
+
+        // Close modal when clicking outside content
+        aboutModal.addEventListener('click', (e) => {
+            if (e.target === aboutModal) {
+                navButton.classList.remove('active');
+                aboutModal.classList.remove('active');
+            }
+        });
+
+        // State management
+        let selectedFile = null;
+        let currentImageData = null;
+
+        // DOM elements
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const previewContainer = document.getElementById('previewContainer');
+        const previewImage = document.getElementById('previewImage');
+        const deleteImageBtn = document.getElementById('deleteImageBtn');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const initialState = document.getElementById('initialState');
+        const processingState = document.getElementById('processingState');
+        const resultsState = document.getElementById('resultsState');
+        const annotatedImageWrapper = document.getElementById('annotatedImageWrapper');
+        const annotatedImage = document.getElementById('annotatedImage');
+        const openImageBtn = document.getElementById('openImageBtn');
+        const downloadImageBtn = document.getElementById('downloadImageBtn');
+        const analysisText = document.getElementById('analysisText');
+        const chatMessages = document.getElementById('chatMessages');
+        const chatInput = document.getElementById('chatInput');
+        const sendBtn = document.getElementById('sendBtn');
+
+        // Upload area interactions
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            handleFileSelect(file);
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            handleFileSelect(file);
+        });
+
+        // Delete uploaded image
+        deleteImageBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            selectedFile = null;
+            previewImage.src = '';
+            previewContainer.classList.add('hidden');
+            uploadArea.classList.remove('hidden');
+            fileInput.value = '';
+        });
+
+        function handleFileSelect(file) {
+            if (file && file.type.startsWith('image/')) {
+                selectedFile = file;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    previewImage.src = e.target.result;
+                    uploadArea.classList.add('hidden');
+                    previewContainer.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Analyze button
+        analyzeBtn.addEventListener('click', async () => {
+            if (!selectedFile) return;
+
+            // Show processing state
+            initialState.classList.add('hidden');
+            resultsState.classList.add('hidden');
+            processingState.classList.remove('hidden');
+
+            try {
+                // Convert image to base64
+                const base64Image = await fileToBase64(selectedFile);
+                const base64Data = base64Image.split(',')[1];
+
+                // Call API
+                const response = await fetch('/api/analyze', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        base64Image: base64Data,
+                        mimeType: selectedFile.type
+                    })
+                });
+
+                const data = await response.json();
+
+                // Show results
+                processingState.classList.add('hidden');
+                resultsState.classList.remove('hidden');
+                
+                analysisText.textContent = data.reply;
+                
+                if (data.annotatedImage) {
+                    annotatedImage.src = data.annotatedImage;
+                    annotatedImageWrapper.classList.remove('hidden');
+                }
+
+                // Clear chat
+                chatMessages.innerHTML = '';
+                currentImageData = { base64Data, mimeType: selectedFile.type };
+
+            } catch (error) {
+                console.error('Analysis error:', error);
+                processingState.classList.add('hidden');
+                initialState.classList.remove('hidden');
+                alert('Analysis failed: ' + error.message);
+            }
+        });
+
+        // Annotated image controls
+        openImageBtn.addEventListener('click', () => {
+            window.open(annotatedImage.src, '_blank');
+        });
+
+        downloadImageBtn.addEventListener('click', async () => {
+            try {
+                const response = await fetch(annotatedImage.src);
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'cosmic-analysis-annotated.jpg';
+                a.style.display = 'none';
+                document.body.appendChild(a);
+                a.click();
+                
+                // Clean up
+                setTimeout(() => {
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+                }, 100);
+            } catch (error) {
+                console.error('Download error:', error);
+                // Fallback: open in new tab if download fails
+                window.open(annotatedImage.src, '_blank');
+            }
+        });
+
+        // Chat functionality
+        sendBtn.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        async function sendMessage() {
+            const message = chatInput.value.trim();
+            if (!message) return;
+
+            // Add user message
+            addMessage(message, 'user');
+            chatInput.value = '';
+
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message })
+                });
+
+                const data = await response.json();
+                addMessage(data.reply, 'astro');
+
+            } catch (error) {
+                console.error('Chat error:', error);
+                addMessage('Sorry, I encountered an error processing your question.', 'astro');
+            }
+        }
+
+        function addMessage(text, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            contentDiv.textContent = text;
+            
+            messageDiv.appendChild(contentDiv);
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+
+
+    </script>
+
+
+</body>
+
+</html>
+
 
