@@ -1,4 +1,7 @@
 # CosmicQuery
+
+"See the cosmos, know the story."
+
 ---
 An astronomical image analysis platform that combines interstellar feature-detecting technology with artificial intelligence to help you better explore and understand the cosmos. 
 
